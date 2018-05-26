@@ -1,17 +1,31 @@
 #include<iostream>
-#include "relation.hpp"
-std::
+#include "distribued.hpp"
+#include<mpi.h>
+
+
 int main(int argc, char** argv){
-  Relation<int, 2> r1 = Relation<int, 2>(argv[1]);
-  Relation<int, 3> r2 = Relation<int, 3>();
-  Relation<int, 3> r3 = Relation<int, 3>();
-
-  vector<string> var1 {"x", "y"};
-  vector<string> var2 {"y", "z"};
-  vector<string> var3 {"x", "z"};
-  vector<string> var  {"x", "y", "z"};
-
-  join<int, 2, 2, 3, 1>(r1, var1, r1, var2, r2);
-  join<int, 3, 2, 3, 2>(r2, var, r1, var3, r3);
-  r3.to_file("res");
+  MPI::Init(argc, argv);
+  int rank = MPI::COMM_WORLD.Get_rank();
+  vector<string> vars1 {"x", "y"};
+  vector<string> vars2 {"y", "z"};
+  Relation r1 = Relation(vars1);
+  Relation r2 = Relation(vars2);
+  if (rank == 0){
+    vector<string> v = join_vars(vars1, vars2);
+    r1 = Relation(argv[1], 2);
+    r2 = Relation(argv[2], 2);
+    r1.to_file("r1");
+    r2.to_file("r2");
+    r1.set_vars(vars1);
+    r2.set_vars(vars2);
+    //Relation r = join(r1, r2);
+    //r.to_file("joined");
+  }
+  Relation r = distribued_join(&r1, &r2);
+  if (rank == 0){
+    r.to_file("joined");
+  }
+  MPI::Finalize();
+  return 0;
 }
+
