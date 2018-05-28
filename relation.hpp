@@ -42,6 +42,7 @@ public:
 
 };
 
+void get_index(vector<string>, vector<string>, vector<int>&, vector<int>&);
 Relation join(Relation&, Relation&);
 vector<string> common_vars(vector<string>, vector<string>);
 vector<string> join_vars(vector<string>, vector<string>);

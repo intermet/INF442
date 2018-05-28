@@ -224,26 +224,64 @@ void Relation::project(vector<string> subvars, Relation &res){
 }
 
 
-void join_add_entry(vector<string> vars1, int* t1, int arity1, vector<string> vars2, int* t2, int arity2, Relation &r){
-  std::set<string> map;
-  int* entry = new int[r.get_arity()];
-  map.clear();
+// void join_add_entry(vector<string> vars1, int* t1, int arity1, vector<string> vars2, int* t2, int arity2, Relation &r){
+//   std::set<string> map;
+//   int* entry = new int[r.get_arity()];
+//   map.clear();
+//   int l = 0;
+//   for(int k=0; k < arity1; k++){
+//     if(map.count(vars1[k]) == 0){
+//       entry[l] = t1[k];
+//       map.insert(vars1[k]);
+//       l += 1;
+//     }
+//   }
+//   for(int k=0; k < arity2; k++){
+//      if(map.count(vars2[k]) == 0){
+//        entry[l] = t2[k];
+//        map.insert(vars2[k]);
+//       l += 1;
+//     }
+//   }
+//   r.add(entry);
+// }
+
+
+void join_add_entry(int* t1, int* t2, vector<int> idx1, vector<int> idx2, Relation &r){
+  int* entry = new int[idx1.size() + idx2.size()];
   int l = 0;
-  for(int k=0; k < arity1; k++){
-    if(map.count(vars1[k]) == 0){
-      entry[l] = t1[k];
-      map.insert(vars1[k]);
-      l += 1;
-    }
+
+  for (int x: idx1){
+    entry[l] = t1[x];
+    l += 1;
   }
-  for(int k=0; k < arity2; k++){
-    if(map.count(vars2[k]) == 0){
-      entry[l] = t2[k];
-      map.insert(vars2[k]);
-      l += 1;
-    }
+  
+  for (int x: idx2){
+    entry[l] = t2[x];
+    l+= 1;
   }
+
   r.add(entry);
+}
+
+
+void get_index(vector<string> vars1, vector<string> vars2, vector<int> &res1, vector<int> &res2){
+  std::set<string> map;
+  int arity1 = vars1.size();
+  int arity2 = vars2.size();
+  for (int k = 0; k < arity1; k++){
+    if(map.count(vars1[k]) == 0){
+      res1.push_back(k);
+      map.insert(vars1[k]);
+    }
+  }
+
+  for (int k = 0; k < arity2; k++){
+    if(map.count(vars2[k]) == 0){
+      res2.push_back(k);
+      map.insert(vars2[k]);
+    }
+  }
 }
 
 Relation join(Relation &r1, Relation &r2){
@@ -252,6 +290,9 @@ Relation join(Relation &r1, Relation &r2){
   vector<string> res_vars = join_vars(vars1, vars2);
   vector<string> common = common_vars(vars1, vars2);
 
+  vector<int> vars1_idx;
+  vector<int> vars2_idx;
+  get_index(vars1, vars2, vars1_idx, vars2_idx);
 
   vector<int> order1 = r1.find_order(common);
   vector<int> order2 = r2.find_order(common);
@@ -273,6 +314,9 @@ Relation join(Relation &r1, Relation &r2){
   
   int size1 = r1.get_size();
   int size2 = r2.get_size();
+
+  int arity1 = r1.get_arity();
+  int arity2 = r2.get_arity();
   
   int c;
     
@@ -283,11 +327,7 @@ Relation join(Relation &r1, Relation &r2){
   int* pt1 = new int[r1.get_arity()];
   int* pt2 = new int[r2.get_arity()];
 
-  r1.to_file("sorted1");
-  r2.to_file("sorted2");
-
   while (i < size1 && j < size2) {
-    std::cout << i << "\n";
     t1 = r1.entry(i);
     t2 = r2.entry(j);
 
@@ -297,23 +337,32 @@ Relation join(Relation &r1, Relation &r2){
 	pt2 = r2.project_entry(t2, common);
 	c = compare(pt1, pt2, common_order);
 	if (c == 1){
+	  k = 0;
 	  i += 1;
 	} else if (c == -1){
+	  k = 0;
 	  j += 1;
 	} else {
-	  k = j;
-	  while (true && k < size2){
-	    t2 = r2.entry(k);
-	    pt2 = r2.project_entry(t2, common);
-	    c = compare(pt1, pt2, common_order);
-	    if (c == 0){
-	      join_add_entry(vars1, t1, r1.get_arity(),vars2, t2, r2.get_arity(), res);
-	      k += 1;
-	    } else {
-	      break;
+	  if (k == 0){
+	    k = j;
+	    while (k < size2){
+	      t2 = r2.entry(k);
+	      pt2 = r2.project_entry(t2, common);
+	      c = compare(pt1, pt2, common_order);
+	      if (c == 0){
+		join_add_entry(t1, t2, vars1_idx, vars2_idx, res);
+		k += 1;
+	      } else {
+		break;
+	      }
 	    }
+	    i += 1;
+	  } else {
+	    for (int l = j; l < k; l++){
+	      join_add_entry(t1, t2, vars1_idx, vars2_idx, res);
+	    }
+	    i += 1;
 	  }
-	  i += 1;
 	}
       } else {
 	j += 1;
@@ -347,6 +396,7 @@ Relation join(Relation &r1, Relation &r2){
   //     i += 1;
   //   }
   // }
+  res.set_vars(join_vars(vars1, vars2));
   return res;
 }
 
