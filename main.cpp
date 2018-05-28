@@ -3,6 +3,7 @@
 #include "hypercube.hpp"
 #include<mpi.h>
 
+//dev
 
 int main(int argc, char** argv){
   MPI::Init(argc, argv);
