@@ -20,7 +20,7 @@ int main(int argc, char** argv){
   r3.set_vars(vars3);
 
   vector<Relation> r;
-  
+  Hasher h = HashSimpleMod();
   if (rank == 0){
     r1 = Relation("facebook.dat", vars1);
     r2 = Relation("facebook.dat", vars2);
@@ -28,8 +28,11 @@ int main(int argc, char** argv){
   }
 
   r = {r1, r2, r3};
-  Relation res = ff(r);
-  // distribued_join(&r1, &r2);
+  Relation res = ff(r, h);
+  if (rank == 0){
+    //res.to_file("res");
+  }
+  //distribued_join(&r1, &r2);
   MPI_Finalize();
   return 0;
 }

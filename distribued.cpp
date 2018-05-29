@@ -1,7 +1,7 @@
 #include<mpi.h>
 #include "relation.hpp"
 #include<vector>
-
+#include "hash.cpp"
 
 using std::vector;
 
@@ -133,7 +133,7 @@ void f(Relation *r1, Relation *r2){
 }
 
 
-Relation ff(vector<Relation> &r){
+Relation ff(vector<Relation> &r, Hasher h){
   int no_r = r.size();
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -175,7 +175,7 @@ Relation ff(vector<Relation> &r){
   return res;
 }
 
-Relation distribued_join(Relation *r1, Relation *r2){
+Relation distribued_join(Relation *r1, Relation *r2, Hasher h){
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int p;
