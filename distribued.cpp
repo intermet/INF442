@@ -137,8 +137,10 @@ void f(Relation *r1, Relation *r2){
 
 Relation ff(vector<Relation> &r){
   int no_r = r.size();
-  int rank = MPI::COMM_WORLD.Get_rank();
-  int p = MPI::COMM_WORLD.Get_size();
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  int p;
+  MPI_Comm_size(MPI_COMM_WORLD, &p);
   
   Relation res;
 
