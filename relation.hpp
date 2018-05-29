@@ -5,6 +5,9 @@
 using std::vector;
 using std::string;
 
+
+vector<string> common_vars(vector<string>, vector<string>, vector<int>&, vector<int>&);
+ 
 class Relation {
 private:
   int size;
@@ -12,13 +15,11 @@ private:
   vector<string> vars;
   
 public:
-  vector<int*> entries;
+  int* entries;
   Relation(void);
-  Relation(int);
-  Relation(vector<int*>&, int);
-  Relation(string, int);
-  Relation(vector<string>);
-
+  Relation(vector<int>, vector<string>);
+  Relation(string, vector<string>);
+  
   int get_size(void);
   int get_arity(void);
 
@@ -27,22 +28,20 @@ public:
   vector<string> get_vars(void);
   void set_vars(vector<string>);
 
-  void add(int*);
-  
   void to_file(string);
-  bool satisfy_atom(int*);
+  bool satisfy_atom(int);
+  
   vector<int> find_order(vector<string>);
 
-  int* project_entry(int*, vector<string>);
-
+  vector<int> project_entry(int, vector<string>);
+  
   void project(vector<string>, Relation&);
   
   void sort(vector<int>);
-
-
 };
 
 void get_index(vector<string>, vector<string>, vector<int>&, vector<int>&);
 Relation join(Relation&, Relation&);
-vector<string> common_vars(vector<string>, vector<string>);
 vector<string> join_vars(vector<string>, vector<string>);
+
+void f();
