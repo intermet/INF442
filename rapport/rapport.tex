@@ -1,6 +1,48 @@
 \documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage[affil-it]{authblk}
+\usepackage{multicol}
+\usepackage{hyperref}
+
+\usepackage{listings}
+ 
+\lstset{language=c++}
+
+\author{Scander Mustapha}
+\title{Distributed Join Processing\\ on Social Network Data}
+\affil{\'Ecole polytechnique}
+
 
 
 \begin{document}
+\maketitle
+\let\olditem\item
+\renewcommand{\item}{\olditem[$\bullet$]}
+
+Ce rapport a pour objet de présenter l'implémentation et les résultats du projet "Distributed Join Processing on Social Network Data". Le code est disponible sur le repo \footnote{\url{https://github.com/intermet/inf442}}. Nous avons implémenté une structure de donnée représentant une relation, la jointure séquentielle et distribuée d'atomes , ainsi que la jointure hypercube.
+
+\section{Généralités}
+Soient $R_1$ et $R_2$ deux relations sur des entiers naturels.
+Notons $a_1 \in \mathbb{N}$ (resp. $a_2 \in \mathbb{N}$) l'arité de $R_1$ (resp. $R_2$).
+
+Considérons des variables $(x_1, \dots, x_{a_1})$ et $(y_1, \dots, y_{a_2})$, éventuellement non distinctes.
+
+\section{Présentation de résultats}
+
+\subsection{Jointure séquentielle}
+
+\subsection{Jointure distribuée Task 5}
+
+\subsection{Jointure distribuée Task 7}
+
+\subsection{Join H}
 
 \end{document}

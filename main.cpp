@@ -3,46 +3,134 @@
 #include "hypercube.hpp"
 #include<mpi.h>
 
+
+void test_simple_join(int rank, char **argv){
+  Relation r1;
+  Relation r2;
+
+  vector<string> vars1 {"x", "y"};
+  vector<string> vars2 {"y", "z"};
+
+  r1.set_vars(vars1);
+  r2.set_vars(vars2);
+
+  Hasher h = HashSimpleMod();
+  if (rank == 0){
+    r1 = Relation(argv[1], vars1);
+    r2 = Relation(argv[1], vars2);
+  }
+
+  Relation res = distribued_join(&r1, &r2, h);
+
+  if (rank == 0){
+    // res.to_file("res");
+  }
+  
+}
+
+void test_simple2_join(int rank, char **argv){
+  Relation r1;
+  Relation r2;
+
+  vector<string> vars1 {"x", "y"};
+  vector<string> vars2 {"y", "z"};
+
+  r1.set_vars(vars1);
+  r2.set_vars(vars2);
+
+  Hasher h = HashSimpleMod();
+  if (rank == 0){
+    r1 = Relation(argv[1], vars1);
+    r2 = Relation(argv[1], vars2);
+  }
+
+  vector<Relation> r {r1, r2};
+  Relation res = ff(r, h);
+
+  if (rank == 0){
+    // res.to_file("res");
+  }
+  
+}
+
+
+
+void test_triangle2_join(int rank, char **argv){
+  Relation r1;
+  Relation r2;
+  Relation r3;
+
+  vector<string> vars1 {"x", "y"};
+  vector<string> vars2 {"y", "z"};
+  vector<string> vars3 {"z", "x"};
+
+  r1.set_vars(vars1);
+  r2.set_vars(vars2);
+  r3.set_vars(vars3);
+
+  Hasher h = HashSimpleMod();
+  if (rank == 0){
+    r1 = Relation(argv[1], vars1);
+    r2 = Relation(argv[1], vars2);
+    r3 = Relation(argv[1], vars3);
+  }
+
+  vector<Relation> r {r1, r2};
+  Relation res = ff(r, h);
+  res.set_vars({"x", "y", "z"});
+  r = {res, r3};
+  res = ff(r, h);
+  if (rank == 0){
+    // res.to_file("res");
+  }
+  
+}
+
 int main(int argc, char** argv){
   MPI_Init(&argc, &argv);
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  Hypercube h (3);
+  // Hypercube h (3);
 
-  Relation r1;
-  if (rank == 0){
-    r1 = Relation("facebook.dat", vector<string> {"x", "y"});
-    h.compute_triangles(&r1);
-  }
+  // Relation r1;
+  // if (rank == 0){
+  //   r1 = Relation("facebook.dat", vector<string> {"x", "y"});
+  //   h.compute_triangles(&r1);
+  // }
   // Relation r1;
   // Relation r2;
   // Relation r3;
 
   // vector<string> vars1 {"x", "y"};
   // vector<string> vars2 {"y", "z"};
-  // vector<string> vars3 {"z", "u"};
+  // vector<string> vars3 {"z", "x"};
 
   // r1.set_vars(vars1);
   // r2.set_vars(vars2);
   // r3.set_vars(vars3);
 
-  // vector<Relation> r;
+  // //vector<Relation> r;
   // Hasher h = HashSimpleMod();
   // if (rank == 0){
-  //   r1 = Relation("fb.dat", vars1);
-  //   r2 = Relation("fb.dat", vars2);
-  //   r3 = Relation("fb.dat", vars3);
+  //   r1 = Relation(argv[1], vars1);
+  //   r2 = Relation(argv[1], vars2);
+  //   r3 = Relation(argv[1], vars3);
   // }
 
-  // r = {r1, r2, r3};
-  // Relation res = ff(r, h);
+  // Relation r = distribued_join(&r1, &r2, h);
+  // r.set_vars({"x", "y", "z"});
+  // r = distribued_join(&r, &r3, h);
   // if (rank == 0){
-  //   std::cout << res.get_size() << "\n";
-  //   //res.to_file("res");
+  //   // r.to_file("res");
   // }
-  // //distribued_join(&r1, &r2);
+  //distribued_join(&r1, &r2);
+
+  // test_simple2_join(rank, argv);
+  test_triangle2_join(rank, argv);
+  
   MPI_Finalize();
   return 0;
 }
+
 

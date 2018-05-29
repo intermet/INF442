@@ -44,6 +44,7 @@ public:
 
 void get_index(vector<string>, vector<string>, vector<int>&, vector<int>&);
 Relation join(Relation&, Relation&);
+Relation multi_join(vector<Relation>&);
 vector<string> join_vars(vector<string>, vector<string>);
 
 void f();

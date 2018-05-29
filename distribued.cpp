@@ -214,11 +214,12 @@ Relation distribued_join(Relation *r1, Relation *r2, Hasher h){
 }
 
 
-
-Relation multi_distribued_join(vector<Relation> &relations){
+Relation multi_distribued_join(vector<Relation> &relations, Hasher h){
   Relation res = relations[0];
   for (Relation r: relations){
-    res = join(res, r);
+    res = distribued_join(&res, &r, h);
+    std::cout << "hllo" << "\n";
   }
   return res;
 }
+

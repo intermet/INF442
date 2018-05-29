@@ -93,6 +93,5 @@ Relation Hypercube::compute_triangles(Relation *r){
     local = join(local1, local2);
     local = join(local, local3);
   }
-  
   return local1;
 }

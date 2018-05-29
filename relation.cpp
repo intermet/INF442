@@ -344,3 +344,10 @@ Relation join(Relation &r1, Relation &r2){
 }
 
 
+Relation multi_join(vector<Relation> &relations){
+  Relation res = relations[0];
+  for (Relation r: relations){
+    res = join(res, r);
+  }
+  return res;
+}
