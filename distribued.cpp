@@ -4,8 +4,6 @@
 
 
 using std::vector;
-using std::array;
-
 
 void send_buffer(int sender, int receiver, int rank, vector<int> &to_send, vector<int> &to_recv){
   int size_recv;
