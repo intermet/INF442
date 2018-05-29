@@ -3,8 +3,9 @@
 #include<mpi.h>
 
 int main(int argc, char** argv){
-  MPI::Init(argc, argv);
-  int rank = MPI::COMM_WORLD.Get_rank();
+  MPI_Init(&argc, &argv);
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   Relation r1;
   Relation r2;
@@ -29,7 +30,7 @@ int main(int argc, char** argv){
   r = {r1, r2, r3};
   Relation res = ff(r);
   // distribued_join(&r1, &r2);
-  MPI::Finalize();
+  MPI_Finalize();
   return 0;
 }
 

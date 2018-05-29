@@ -91,8 +91,10 @@ void g(Relation *r1, int idx, int p, vector<Relation> &res){
 
 
 void f(Relation *r1, Relation *r2){
-  int rank = MPI::COMM_WORLD.Get_rank();
-  int p = MPI::COMM_WORLD.Get_size();
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  int p;
+  MPI_Comm_size(MPI_COMM_WORLD, &p);
 
   vector<string> vars1 = r1->get_vars();
   vector<string> vars2 = r2->get_vars();
@@ -174,8 +176,10 @@ Relation ff(vector<Relation> &r){
 }
 
 Relation distribued_join(Relation *r1, Relation *r2){
-  int rank = MPI::COMM_WORLD.Get_rank();
-  int p = MPI::COMM_WORLD.Get_size();
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  int p;
+  MPI_Comm_size(MPI_COMM_WORLD, &p);
 
   vector<string> vars1 = r1->get_vars();
   vector<string> vars2 = r2->get_vars();
