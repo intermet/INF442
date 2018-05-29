@@ -11,3 +11,9 @@ distribued.o: relation.o  hash.o distribued.hpp distribued.cpp
 
 main: distribued.o
 	$(CXX) distribued.o relation.o hash.o main.cpp -o main
+
+run:
+	salloc
+
+%:
+	@:

@@ -279,9 +279,6 @@ Relation join(Relation &r1, Relation &r2){
   r1.sort(order1);
   r2.sort(order2);
 
-  r1.to_file("r1");
-  r2.to_file("r2");
-
   int size1 = r1.get_size();
   int size2 = r2.get_size();
 

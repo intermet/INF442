@@ -1,6 +1,8 @@
 class Hasher {
 public:
-  int hash(int, int);
+  virtual int hash(int, int){
+    return 0;
+  };
 };
 
 class HashSimpleMod : public Hasher{
@@ -21,3 +23,4 @@ public:
   int hash(int, int);
   
 };
+

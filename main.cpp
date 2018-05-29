@@ -27,7 +27,7 @@ int main(int argc, char** argv){
     r3 = Relation("facebook.dat", vars3);
   }
 
-  r = {r1, r2, r3};
+  r = {r1, r2};
   Relation res = ff(r, h);
   if (rank == 0){
     //res.to_file("res");

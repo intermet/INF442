@@ -1,10 +1,8 @@
 #include "hash.hpp"
 
-
 int HashSimpleMod::hash(int n, int m){
   return n % m;
 }
-
 
 int HashLooseLoose::hash(int n, int m){
   int hash = 0;

@@ -1,7 +1,7 @@
 #include<mpi.h>
 #include "relation.hpp"
 #include<vector>
-#include "hash.cpp"
+#include "hash.hpp"
 
 using std::vector;
 
@@ -19,7 +19,7 @@ void send_buffer(int sender, int receiver, int rank, vector<int> &to_send, vecto
 }
 
 
-void scatter_entries(int rank, int root, int p, int var, Relation *r1, Relation *local){
+void scatter_entries(int rank, int root, int p, int var, Relation *r1, Relation *local, Hasher h){
   vector<vector<int>> buffers;
   int arity = r1->get_arity();
   int size = r1->get_size();
@@ -29,7 +29,7 @@ void scatter_entries(int rank, int root, int p, int var, Relation *r1, Relation 
     for (int i = 0; i < size; i += arity){
       entry = r1->entry(i);
       for (int j = 0; j < arity; j++){
-      	buffers[entry[var] % p].push_back(entry[j]);
+      	buffers[h.hash(entry[var], p)].push_back(entry[j]);
       }
     }
   }
@@ -39,7 +39,6 @@ void scatter_entries(int rank, int root, int p, int var, Relation *r1, Relation 
     }
   }
   *local = Relation(buffers[rank], r1->get_vars());
-  local->to_file("local" + std::to_string(rank));
 }
 
 
@@ -70,7 +69,7 @@ void gather_entries(int rank, int root, int p, Relation *r, Relation *res){
 }
 
 
-void g(Relation *r1, int idx, int p, vector<Relation> &res){
+void g(Relation *r1, int idx, int p, vector<Relation> &res, Hasher h){
   res.resize(p, Relation());
   int arity = r1->get_arity();
   int *  entry;
@@ -79,7 +78,7 @@ void g(Relation *r1, int idx, int p, vector<Relation> &res){
   for (int i = 0; i < r1->get_size(); i += arity) {
     entry = r1->entry(i);
     for (int j = 0; j < arity; j++) {
-      buffers[entry[idx] % p].push_back(entry[j]);
+      buffers[h.hash(entry[idx], p)].push_back(entry[j]);
     }
   }
   for (int  i = 0; i < p; i++) {
@@ -88,7 +87,7 @@ void g(Relation *r1, int idx, int p, vector<Relation> &res){
 }
 
 
-void f(Relation *r1, Relation *r2){
+void f(Relation *r1, Relation *r2, Hasher h){
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int p;
@@ -122,10 +121,10 @@ void f(Relation *r1, Relation *r2){
 
   Relation local_r1;
   Relation local_r2;
-  scatter_entries(rank, 0, p, idx2_var, r2, &local_r2);
+  scatter_entries(rank, 0, p, idx2_var, r2, &local_r2, h);
 
   vector<Relation> r;
-  g(r1, idx1_var, p, r);
+  g(r1, idx1_var, p, r, h);
   for(int i=0; i < p; i++){
     gather_entries(rank, i, p, &r[i], &local_r1);
   }
@@ -163,15 +162,12 @@ Relation ff(vector<Relation> &r, Hasher h){
     idx1_var += 1;
   }
   Relation local_r1;
-  scatter_entries(rank, 0, p, idx1_var, &r1, &local_r1);
+  scatter_entries(rank, 0, p, idx1_var, &r1, &local_r1, h);
   for (int i = 1; i < no_r; i++){
-    f(&local_r1, &r[i]);
+    f(&local_r1, &r[i], h);
   } 
   
   gather_entries(rank, 0, p, &local_r1, &res);
-  if (rank == 0){
-    res.to_file("res2");
-  }
   return res;
 }
 
@@ -209,14 +205,11 @@ Relation distribued_join(Relation *r1, Relation *r2, Hasher h){
 
   Relation local_r1;
   Relation local_r2;
-  scatter_entries(rank, 0, p, idx1_var, r1, &local_r1);
-  scatter_entries(rank, 0, p, idx2_var, r2, &local_r2);
+  scatter_entries(rank, 0, p, idx1_var, r1, &local_r1, h);
+  scatter_entries(rank, 0, p, idx2_var, r2, &local_r2, h);
   Relation local = join(local_r1, local_r2);
   gather_entries(rank, 0, p, &local, &res);
   
-  if (rank == 0){
-    res.to_file("res");
-  }
   return res;
 }
 
