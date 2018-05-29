@@ -307,8 +307,8 @@ Relation join(Relation &r1, Relation &r2){
 	  k = 0;
 	  i += arity1;
 	} else if (c == -1){
-	  j = k;
 	  k = 0;
+	  j += arity2;
 	} else {
 	  if (k == 0){
 	    k = j;

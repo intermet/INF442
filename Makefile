@@ -9,11 +9,10 @@ hash.o: hash.hpp hash.cpp
 distribued.o: relation.o  hash.o distribued.hpp distribued.cpp
 	$(CXX) -c relation.o hash.o distribued.cpp -o distribued.o
 
-main: distribued.o
-	$(CXX) distribued.o relation.o hash.o main.cpp -o main
+hypercube.o: relation.o hypercube.hpp hypercube.cpp
+	$(CXX) -c relation.o hypercube.cpp -o hypercube.o
 
-run:
-	salloc
+main: distribued.o hypercube.o relation.o main.cpp
+	$(CXX) distribued.o relation.o hash.o hypercube.o main.cpp -o main
 
-%:
-	@:
+

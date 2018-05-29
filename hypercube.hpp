@@ -3,6 +3,8 @@
 #include<string>
 #include<map>
 
+#include "relation.hpp"
+
 using std::vector;
 using std::string;
 
@@ -10,10 +12,12 @@ using std::string;
 class Hypercube {
 public:
   int m;
-  int p;
+  int no_machines;
   std::map<vector<int>, int> map;
   
-  Hypercube(int, int);
-
-  vector<int> get_machine(vector<int>, vector<string>);
+  Hypercube(int);
+  vector<int> get_machine(int*, vector<string>);
+  void send_buffer(int, int, vector<int>&, vector<int>&);
+  Relation scatter_entries(int, vector<string>, Relation*);
+  Relation compute_triangles(Relation*);
 };

@@ -1,3 +1,5 @@
+#ifndef RELATION_HPP
+#define RELATION_HPP
 #include<iostream>
 #include<vector>
 #include<string>
@@ -45,3 +47,4 @@ Relation join(Relation&, Relation&);
 vector<string> join_vars(vector<string>, vector<string>);
 
 void f();
+#endif
