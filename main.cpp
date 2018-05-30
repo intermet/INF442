@@ -105,7 +105,7 @@ void test_triangle_task7_join(int rank, char **argv){
   Relation res = task7_multi_join(r, h);
   res.set_vars({"x", "y", "z"});
   r = {res, r3};
-  res = task7_multi_joinl(r, h);
+  res = task7_multi_join(r, h);
   if (rank == 0){
     res.to_file("res");
   }
