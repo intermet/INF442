@@ -19,5 +19,6 @@ public:
   vector<int> get_machine(int*, vector<string>);
   void send_buffer(int, int, vector<int>&, vector<int>&);
   Relation scatter_entries(int, vector<string>, Relation*);
+  void gather_entries(int, int, int, Relation*, Relation*);
   Relation compute_triangles(Relation*);
 };

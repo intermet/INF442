@@ -76,6 +76,34 @@ vector<int> Hypercube::get_machine(int *entry, vector<string> vars){
   return res;
 }
 
+
+void Hypercube::gather_entries(int rank, int root, int p, Relation *r, Relation *res){
+  vector<int> gather_buffer;
+  int joined_size[p];
+  int displs[p];
+  int size_total = 0;
+  vector<int> to_send;
+  int size = r->get_size();
+  MPI_Gather(&size, 1, MPI_INT, &joined_size[0], 1, MPI_INT, root, MPI_COMM_WORLD);
+  displs[0] = 0;
+  for (int i = 1; i < p; i++){
+    displs[i] = displs[i-1] + joined_size[i-1];
+  }
+  
+  if (rank == root){
+    for (int x: joined_size){
+      size_total += x;
+    } 
+    gather_buffer.resize(size_total);
+  }
+  MPI_Gatherv(r->entries, size, MPI_INT, &gather_buffer[0], joined_size, displs, MPI_INT, root, MPI_COMM_WORLD);
+  
+  if (rank == root) {
+    *res = Relation(gather_buffer, r->get_vars());
+  }
+}
+
+
 Relation Hypercube::compute_triangles(Relation *r){
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -85,13 +113,14 @@ Relation Hypercube::compute_triangles(Relation *r){
   Relation local2;
   Relation local3;
   Relation local;
+  Relation res;
   local1 = scatter_entries(rank, vector<string> {"x", "y"}, r);
   local2 = scatter_entries(rank, vector<string> {"y", "z"}, r);
   local3 = scatter_entries(rank, vector<string> {"z", "x"}, r);
 
-  if (rank == 0) { 
-    local = join(local1, local2);
-    local = join(local, local3);
-  }
-  return local1;
+  local = join(local1, local2);
+  local = join(local, local3);
+  gather_entries(rank, 0, p, &local, &res);
+
+  return res;
 }

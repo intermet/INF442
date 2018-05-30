@@ -23,7 +23,7 @@ void test_simple_join(int rank, char **argv){
   Relation res = distribued_join(&r1, &r2, h);
 
   if (rank == 0){
-    // res.to_file("res");
+    res.to_file("res");
   }
   
 }
@@ -73,11 +73,11 @@ void test_triangle_join(int rank, char **argv){
     r3 = Relation(argv[1], vars3);
   }
 
-  Relation res = join(r1, r2);
+  Relation res = distribued_join(&r1, &r2, h);
   res.set_vars({"x", "y", "z"});
-  res = join(res, r3);
+  res = distribued_join(&res, &r3, h);
   if (rank == 0){
-    // res.to_file("res");
+     //res.to_file("res");
   }
 }
 
@@ -119,7 +119,9 @@ void test_hypercube(int rank, char**argv){
     r1 = Relation(argv[1], vector<string> {"x", "y"});
   }
   Relation res = h.compute_triangles(&r1);
-  res.to_file("res");
+  if (rank == 0){
+    res.to_file("res");
+  }
 }
 
 int main(int argc, char** argv){
@@ -127,7 +129,13 @@ int main(int argc, char** argv){
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  test_triangle_join(rank, argv);
+  //test_simple_join(rank, argv);
+  // test_simple_task7_join(rank, argv);
+  
+  //test_triangle_join(rank, argv);
+  // test_triangle_task7_join(rank, argv);
+
+  test_hypercube(rank, argv);
   
   MPI_Finalize();
   return 0;
