@@ -14,7 +14,67 @@ using std::vector;
 using std::string;
 using std::array;
 
+void find_order(Relation &r1, Relation &r2, vector<int> &order1, vector<int> &o1, vector<int> &order2, vector<int> &o2){
+  vector<string> vars1 = r1.get_vars(); 
+  vector<string> vars2 = r2.get_vars(); 
+  int arity1 = r1.get_arity();
+  int arity2 = r2.get_arity();
 
+
+  std::map<string, int> map;
+  std::map<string, int> map1;
+  std::map<string, int> map3;
+  vector<string> common;
+  int i = 0;
+  for (string v: vars1){
+    if (map.count(v) == 0){
+      map[v] = 1;
+      map1[v] = i;
+    }
+    i += 1;
+  }
+
+  int j = 0;
+  for (string v: vars2){
+    if (map.count(v) == 1){
+      map[v] += 1;
+      map3[v] = j;
+    }
+    j += 1;
+  }
+
+  for (string x: vars1){
+    if (map[x] > 1){
+      o1.push_back(map1[x]);
+      o2.push_back(map3[x]);
+    }
+  }
+
+  std::map<string, int> map2;
+  int c1 = 0;
+  int d1 = arity1 - 1;
+  for (string v: vars1){
+    if(map[v] == 2){
+      order1.push_back(c1);
+      map2[v] = c1;
+      c1 += 1;
+    } else {
+      order1.push_back(d1);
+      d1 -= 1;
+    }
+  }
+
+  d1 = arity2 - 1;
+  for (string v: vars2){
+    if (map.count(v) == 1){
+      order2.push_back(map2[v]);
+    } else {
+      order2.push_back(d1);
+      d1 -= 1;
+    }
+  }
+  
+}
 
 int compare(int* x, int* y, vector<int> order) {
   for (int i: order){
@@ -54,8 +114,8 @@ vector<string> common_vars(vector<string> vars1, vector<string> vars2, vector<in
   for (int i = 0; i < size2; i++){
     if (map.count(vars2[i]) == 1){
       res.push_back(vars2[i]);
-      o2.push_back(i);
-      o1.push_back(map[vars2[i]]);
+      // o2.push_back(i);
+      // o1.push_back(map[vars2[i]]);
     }
   }
   return res;
@@ -99,7 +159,6 @@ vector<int> Relation::find_order(vector<string> sub_var){
       d -= 1;
     }
   }
-
   return res;
 }
 
@@ -254,6 +313,8 @@ Relation join(Relation &r1, Relation &r2){
   vector<string> vars1 = r1.get_vars();
   vector<string> vars2 = r2.get_vars();
   vector<string> res_vars = join_vars(vars1, vars2);
+  vector<int> order1;
+  vector<int> order2;
   vector<int> o1;
   vector<int> o2;
   vector<string> common = common_vars(vars1, vars2, o1, o2);
@@ -261,10 +322,6 @@ Relation join(Relation &r1, Relation &r2){
   vector<int> vars1_idx;
   vector<int> vars2_idx;
   get_index(vars1, vars2, vars1_idx, vars2_idx);
-
-  vector<int> order1 = r1.find_order(common);
-  vector<int> order2 = r2.find_order(common);
-
 
   vector<int> common_order;
   int common_order_size = common.size();
@@ -275,9 +332,13 @@ Relation join(Relation &r1, Relation &r2){
   Relation res;
 
   vector<int> buff;
-  
+
+  find_order(r1, r2, order1, o1, order2, o2);
   r1.sort(order1);
   r2.sort(order2);
+
+  r1.to_file("r1sorted");
+  r2.to_file("r2sorted");
 
   int size1 = r1.get_size();
   int size2 = r2.get_size();
@@ -303,6 +364,7 @@ Relation join(Relation &r1, Relation &r2){
 	t1 = r1.entry(i);
 	t2 = r2.entry(j);
 	c =  compare2(t1, t2, o1, o2);
+	// std::cout << i /arity1 << "," << j /arity2 << ",c=" << c<< "\n";
 	if (c == 1){
 	  k = 0;
 	  i += arity1;
@@ -310,6 +372,7 @@ Relation join(Relation &r1, Relation &r2){
 	  k = 0;
 	  j += arity2;
 	} else {
+	  // std::cout << "match" << "\n";
 	  if (k == 0){
 	    k = j;
 	    while (k < size2) {

@@ -28,7 +28,7 @@ void test_simple_join(int rank, char **argv){
   
 }
 
-void test_simple2_join(int rank, char **argv){
+void test_simple_task7_join(int rank, char **argv){
   Relation r1;
   Relation r2;
 
@@ -53,9 +53,35 @@ void test_simple2_join(int rank, char **argv){
   
 }
 
+void test_triangle_join(int rank, char **argv){
+  Relation r1;
+  Relation r2;
+  Relation r3;
 
+  vector<string> vars1 {"x", "y"};
+  vector<string> vars2 {"y", "z"};
+  vector<string> vars3 {"z", "x"};
 
-void test_triangle2_join(int rank, char **argv){
+  r1.set_vars(vars1);
+  r2.set_vars(vars2);
+  r3.set_vars(vars3);
+
+  Hasher h = HashSimpleMod();
+  if (rank == 0){
+    r1 = Relation(argv[1], vars1);
+    r2 = Relation(argv[1], vars2);
+    r3 = Relation(argv[1], vars3);
+  }
+
+  Relation res = join(r1, r2);
+  res.set_vars({"x", "y", "z"});
+  res = join(res, r3);
+  if (rank == 0){
+    // res.to_file("res");
+  }
+}
+
+void test_triangle_task7_join(int rank, char **argv){
   Relation r1;
   Relation r2;
   Relation r3;
@@ -81,9 +107,19 @@ void test_triangle2_join(int rank, char **argv){
   r = {res, r3};
   res = ff(r, h);
   if (rank == 0){
-    // res.to_file("res");
+    res.to_file("res");
   }
-  
+}
+
+
+void test_hypercube(int rank, char**argv){
+  Hypercube h (2);
+  Relation r1;
+  if (rank == 0){
+    r1 = Relation(argv[1], vector<string> {"x", "y"});
+  }
+  Relation res = h.compute_triangles(&r1);
+  res.to_file("res");
 }
 
 int main(int argc, char** argv){
@@ -91,43 +127,7 @@ int main(int argc, char** argv){
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  // Hypercube h (3);
-
-  // Relation r1;
-  // if (rank == 0){
-  //   r1 = Relation("facebook.dat", vector<string> {"x", "y"});
-  //   h.compute_triangles(&r1);
-  // }
-  // Relation r1;
-  // Relation r2;
-  // Relation r3;
-
-  // vector<string> vars1 {"x", "y"};
-  // vector<string> vars2 {"y", "z"};
-  // vector<string> vars3 {"z", "x"};
-
-  // r1.set_vars(vars1);
-  // r2.set_vars(vars2);
-  // r3.set_vars(vars3);
-
-  // //vector<Relation> r;
-  // Hasher h = HashSimpleMod();
-  // if (rank == 0){
-  //   r1 = Relation(argv[1], vars1);
-  //   r2 = Relation(argv[1], vars2);
-  //   r3 = Relation(argv[1], vars3);
-  // }
-
-  // Relation r = distribued_join(&r1, &r2, h);
-  // r.set_vars({"x", "y", "z"});
-  // r = distribued_join(&r, &r3, h);
-  // if (rank == 0){
-  //   // r.to_file("res");
-  // }
-  //distribued_join(&r1, &r2);
-
-  // test_simple2_join(rank, argv);
-  test_triangle2_join(rank, argv);
+  test_triangle_join(rank, argv);
   
   MPI_Finalize();
   return 0;

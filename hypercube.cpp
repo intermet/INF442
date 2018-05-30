@@ -33,10 +33,10 @@ Relation Hypercube::scatter_entries(int rank, vector<string> vars, Relation *r){
 	buffers[buf].push_back(entry[1]);
       }
     }
-    for (int i = 0; i < this->no_machines; i++){
-      if (i != 0){
-	send_buffer(i, rank, buffers[i], buffers[i]);
-      }
+  }
+  for (int i = 0; i < this->no_machines; i++){
+    if (i != 0){
+      send_buffer(i, rank, buffers[i], buffers[i]);
     }
   }
   res = Relation(buffers[rank], vars);
