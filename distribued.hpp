@@ -6,6 +6,6 @@
 #include<vector>
 
 Relation distribued_join(Relation*, Relation*, Hasher);
-Relation ff(vector<Relation>&, Hasher h);
+Relation task7_multi_join(vector<Relation>&, Hasher h);
 Relation multi_distribued_join(vector<Relation>&, Hasher);
 

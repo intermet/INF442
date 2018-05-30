@@ -69,7 +69,7 @@ void gather_entries(int rank, int root, int p, Relation *r, Relation *res){
 }
 
 
-void g(Relation *r1, int idx, int p, vector<Relation> &res, Hasher h){
+void task7_scatter(Relation *r1, int idx, int p, vector<Relation> &res, Hasher h){
   res.resize(p, Relation());
   int arity = r1->get_arity();
   int *  entry;
@@ -87,7 +87,7 @@ void g(Relation *r1, int idx, int p, vector<Relation> &res, Hasher h){
 }
 
 
-void f(Relation *r1, Relation *r2, Hasher h){
+void task7_join(Relation *r1, Relation *r2, Hasher h){
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int p;
@@ -124,7 +124,7 @@ void f(Relation *r1, Relation *r2, Hasher h){
   scatter_entries(rank, 0, p, idx2_var, r2, &local_r2, h);
 
   vector<Relation> r;
-  g(r1, idx1_var, p, r, h);
+  task7_scatter(r1, idx1_var, p, r, h);
   for(int i=0; i < p; i++){
     gather_entries(rank, i, p, &r[i], &local_r1);
   }
@@ -132,7 +132,7 @@ void f(Relation *r1, Relation *r2, Hasher h){
 }
 
 
-Relation ff(vector<Relation> &r, Hasher h){
+Relation task7_multi_join(vector<Relation> &r, Hasher h){
   int no_r = r.size();
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -164,7 +164,7 @@ Relation ff(vector<Relation> &r, Hasher h){
   Relation local_r1;
   scatter_entries(rank, 0, p, idx1_var, &r1, &local_r1, h);
   for (int i = 1; i < no_r; i++){
-    f(&local_r1, &r[i], h);
+    task7_join(&local_r1, &r[i], h);
   } 
   
   gather_entries(rank, 0, p, &local_r1, &res);

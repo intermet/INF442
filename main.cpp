@@ -45,7 +45,7 @@ void test_simple_task7_join(int rank, char **argv){
   }
 
   vector<Relation> r {r1, r2};
-  Relation res = ff(r, h);
+  Relation res = task7_multi_join(r, h);
 
   if (rank == 0){
     // res.to_file("res");
@@ -102,10 +102,10 @@ void test_triangle_task7_join(int rank, char **argv){
   }
 
   vector<Relation> r {r1, r2};
-  Relation res = ff(r, h);
+  Relation res = task7_multi_join(r, h);
   res.set_vars({"x", "y", "z"});
   r = {res, r3};
-  res = ff(r, h);
+  res = task7_multi_joinl(r, h);
   if (rank == 0){
     res.to_file("res");
   }
